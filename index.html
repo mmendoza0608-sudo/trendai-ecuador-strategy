@@ -27,6 +27,15 @@ footer{padding:34px 0;color:var(--muted);font-size:12px;background:var(--soft)}
 @media(max-width:900px){h1{font-size:38px}.kpis{grid-template-columns:repeat(2,1fr)}.grid,.accounts{grid-template-columns:1fr 1fr}.play{grid-template-columns:1fr 1fr}.revenue,.detail-grid{grid-template-columns:1fr}.links{display:none}}@media(max-width:560px){.grid,.accounts,.play,.facts,.ws{grid-template-columns:1fr}}
 
 .coverage-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}.coverage-node{border:1px solid var(--line);border-radius:14px;padding:18px;background:#fff;position:relative}.coverage-node:not(:last-child):after{content:"→";position:absolute;right:-13px;top:42%;font-size:22px;font-weight:900;color:var(--red);z-index:2}.coverage-node b{display:block;color:var(--red);font-size:11px;letter-spacing:.08em;margin-bottom:7px}.coverage-node h3{margin:0 0 8px;color:var(--navy)}.coverage-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}.motion-card{border-top:4px solid var(--navy)}.motion-card.focus-motion{border-top-color:var(--red)}.motion-card.cosell-motion{border-top-color:var(--blue)}.motion-card.eco-motion{border-top-color:var(--green)}.scorecard{width:100%;border-collapse:collapse;margin-top:18px;font-size:13px}.scorecard th,.scorecard td{border-bottom:1px solid var(--line);padding:10px;text-align:left}.scorecard th{background:var(--soft);color:var(--navy)}.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:22px}.mini-kpi{padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--soft)}.mini-kpi strong{display:block;font-size:20px;color:var(--navy)}@media(max-width:850px){.coverage-flow,.coverage-actions,.kpi-row{grid-template-columns:1fr}.coverage-node:not(:last-child):after{display:none}}
+
+.enablers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.enabler{border:1px solid var(--line);border-radius:14px;background:#fff;padding:18px;border-top:4px solid var(--red)}
+.enabler .num{font-size:11px;font-weight:800;color:var(--red);letter-spacing:.08em}
+.enabler h3{color:var(--navy);margin:7px 0}
+.need-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:24px 0}
+.need-strip div{padding:13px 8px;text-align:center;background:var(--soft);border:1px solid var(--line);border-radius:10px;font-size:11px;font-weight:800;color:var(--navy)}
+.account-needs{border-left:4px solid var(--red);background:var(--soft);padding:14px 16px;border-radius:8px;margin-top:14px}
+@media(max-width:850px){.enablers-grid,.need-strip{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -75,9 +84,41 @@ const labels={C:'C',H:'H',V:'V','△':'△'}; const cls={C:'c',H:'h',V:'v','△'
 function tagClass(a){return a.status==='Cliente'?'client':a.status==='No cliente'?'land':'validate'}
 const grid=document.getElementById('accountGrid');accounts.forEach((a,i)=>{grid.innerHTML+=`<div class="account" onclick="openAccount(${i})"><span class="tag ${tagClass(a)}">${a.status}</span><div class="name">${a.name}</div><div class="meta">${a.sector} · ${a.tier}</div><div class="motion">${a.motion}</div></div>`});
 let html='<tr><th>Cuenta</th>'+sol.map(s=>`<th>${s}</th>`).join('')+'</tr>';accounts.forEach(a=>{html+=`<tr><td><b>${a.name}</b><br><small>${a.status}</small></td>`+sol.map(s=>`<td><span class="sym ${cls[a.ws[s]]}">${labels[a.ws[s]]}</span></td>`).join('')+'</tr>'});document.getElementById('matrix').innerHTML=html;
-function openAccount(i){const a=accounts[i];const coverage=a.tier==='Focus'?'TrendAI-led':(a.tier==='Strategic Build'?'Co-sell dirigido':'Co-sell / Ecosystem-led');document.getElementById('mEyebrow').textContent=`${a.sector} · ${a.tier}`;document.getElementById('mTitle').textContent=a.name;document.getElementById('mThesis').textContent=a.thesis;document.getElementById('mBody').innerHTML=`<div class="facts"><div class="fact"><small>Estado</small><b>${a.status}</b></div><div class="fact"><small>Acceso</small><b>${a.access}</b></div><div class="fact"><small>Motion</small><b>${a.motion}</b></div><div class="fact"><small>Cobertura</small><b>${coverage}</b></div><div class="fact"><small>Partner</small><b>${a.partner}</b></div><div class="fact"><small>Próximo paso</small><b>${a.next}</b></div></div><div class="detail-grid" style="margin-top:24px"><div><h3>Base conocida / hipótesis</h3><p>${a.facts}</p><h3>White-space matrix</h3><div class="ws">${sol.map(s=>`<div><b>${s}</b> <span class="sym ${cls[a.ws[s]]}" style="float:right">${a.ws[s]}</span></div>`).join('')}</div></div><div><h3>Lectura comercial</h3><p>${a.thesis}</p><h3>Estrategia de cobertura</h3><p><b>${coverage}</b>. Mayorista y partner se validan por acceso, capacidad técnica, experiencia vertical y ejecución; no se asume exclusividad.</p><h3>Siguiente acción</h3><p>${a.next}</p><div class="note"><b>Disciplina de datos:</b> C = confirmado; H = hipótesis razonada; V = validar; △ = white space explícito. Las hipótesis no representan installed base confirmado.</div></div></div>`;document.getElementById('modal').classList.add('open');location.hash='account-'+i}
+
+function trendNeeds(a){
+ const n=a.name.toLowerCase();
+ if(n.includes('guayaquil')) return '<b>TrendAI:</b> executive sponsor NOLA; especialistas en AI Security, Identity y CSPM; roadmap/renovaciones/adopción; soporte para la ruta de ~US$600K ARR hacia la aspiración de ~US$1M.';
+ if(n.includes('pichincha')) return '<b>TrendAI:</b> competitive intelligence, arquitectura/preventa, mapa de installed base y executive sponsor para seleccionar un workload de entrada.';
+ if(n.includes('pacífico')||n.includes('pacifico')) return '<b>TrendAI:</b> installed base y renovaciones, alineación con Maint, preventa y executive coverage para priorizar 2–3 white spaces.';
+ if(n.includes('biess')) return '<b>TrendAI:</b> alineación con AVP, especialistas técnicos, sponsorship y soporte comercial para estructurar la iniciativa objetivo de ≥US$350K.';
+ if(n.includes('favorita')||n.includes('difare')) return '<b>TrendAI:</b> referencia y aprendizajes de El Rosado, especialistas de plataforma, executive engagement y activos para el Retail Play.';
+ if(n.includes('santa priscila')) return '<b>TrendAI:</b> validación de footprint, preventa de plataforma y apoyo para convertir el acceso CISO en un roadmap de expansión.';
+ return '<b>TrendAI:</b> validar installed base, renovaciones, stakeholders, partner/mayorista y especialistas necesarios según el white space priorizado.';
+}
+
+function openAccount(i){const a=accounts[i];const coverage=a.tier==='Focus'?'TrendAI-led':(a.tier==='Strategic Build'?'Co-sell dirigido':'Co-sell / Ecosystem-led');document.getElementById('mEyebrow').textContent=`${a.sector} · ${a.tier}`;document.getElementById('mTitle').textContent=a.name;document.getElementById('mThesis').textContent=a.thesis;document.getElementById('mBody').innerHTML=`<div class="facts"><div class="fact"><small>Estado</small><b>${a.status}</b></div><div class="fact"><small>Acceso</small><b>${a.access}</b></div><div class="fact"><small>Motion</small><b>${a.motion}</b></div><div class="fact"><small>Cobertura</small><b>${coverage}</b></div><div class="fact"><small>Partner</small><b>${a.partner}</b></div><div class="fact"><small>Próximo paso</small><b>${a.next}</b></div></div><div class="detail-grid" style="margin-top:24px"><div><h3>Base conocida / hipótesis</h3><p>${a.facts}</p><h3>White-space matrix</h3><div class="ws">${sol.map(s=>`<div><b>${s}</b> <span class="sym ${cls[a.ws[s]]}" style="float:right">${a.ws[s]}</span></div>`).join('')}</div></div><div><h3>Lectura comercial</h3><p>${a.thesis}</p><h3>Estrategia de cobertura</h3><p><b>${coverage}</b>. Mayorista y partner se validan por acceso, capacidad técnica, experiencia vertical y ejecución; no se asume exclusividad.</p><h3>Qué necesito de TrendAI</h3><div class="account-needs">${trendNeeds(a)}</div><h3>Siguiente acción</h3><p>${a.next}</p><div class="note"><b>Disciplina de datos:</b> C = confirmado; H = hipótesis razonada; V = validar; △ = white space explícito. Las hipótesis no representan installed base confirmado.</div></div></div>`;document.getElementById('modal').classList.add('open');location.hash='account-'+i}
 function closeModal(){document.getElementById('modal').classList.remove('open');history.replaceState(null,'',location.pathname+location.search)}document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
 const rev=[['Banco Guayaquil',400],['BIESS',350],['Banco del Pacífico',160],['Favorita',80],['DIFARE',80],['Santa Priscila',80],['Banco Pichincha',80],['Resto',50]];document.getElementById('bars').innerHTML=rev.map(x=>`<b>${x[0]} · ~$${x[1]}K</b><div class="bar"><div class="fill" style="width:${x[1]/4}%"></div></div>`).join('');
 if(location.hash.startsWith('#account-')){const i=+location.hash.split('-')[1];if(accounts[i])openAccount(i)}
 </script>
+<section id="enablers"><div class="wrap">
+<div class="eyebrow">08 · Habilitadores de ejecución</div>
+<h2>Qué necesito de TrendAI para convertir la estrategia en resultados</h2>
+<p class="sub">No son dependencias para iniciar. Son activos internos que aceleran la ejecución, reducen incertidumbre y permiten convertir hipótesis de white space en oportunidades defendibles.</p>
+
+<div class="need-strip">
+<div>VISIBILITY</div><div>ACCESS</div><div>CAPABILITY</div><div>ECOSYSTEM</div><div>DEMAND</div><div>GOVERNANCE</div>
+</div>
+
+<div class="enablers-grid">
+<div class="enabler"><span class="num">01 · ACCOUNT INTELLIGENCE</span><h3>Visibilidad de la base</h3><p>Installed base por solución, ARR, renovaciones, contratos, pipeline e histórico comercial de las 20 cuentas.</p><p><b>Resultado:</b> convertir hipótesis en account plans y white spaces validados.</p></div>
+<div class="enabler"><span class="num">02 · EXECUTIVE SPONSORSHIP</span><h3>Acceso ejecutivo</h3><p>Country/NOLA leadership y sponsors regionales para cuentas estratégicas.</p><p><b>Resultado:</b> locking en Banco Guayaquil y apertura C-level en cuentas Focus.</p></div>
+<div class="enabler"><span class="num">03 · TECHNICAL / PRESALES</span><h3>Capacidad técnica</h3><p>Arquitectos y especialistas para discovery, workshops, assessments, business cases y POCs.</p><p><b>Resultado:</b> transformar white space en iniciativas técnicas y económicas.</p></div>
+<div class="enabler"><span class="num">04 · PARTNER & DISTRIBUTION</span><h3>Inteligencia del ecosistema</h3><p>Histórico por TD SYNNEX/LoL, partners activos, certificaciones, capacidades y relaciones por cuenta.</p><p><b>Resultado:</b> seleccionar el modelo de cobertura adecuado por oportunidad.</p></div>
+<div class="enabler"><span class="num">05 · MARKETING / DEMAND GEN</span><h3>Creación de demanda</h3><p>ABM, casos de éxito, referencias regionales, eventos ejecutivos y contenido vertical.</p><p><b>Resultado:</b> escalar los plays de banca, retail, cooperativas y gobierno.</p></div>
+<div class="enabler"><span class="num">06 · COMMERCIAL GOVERNANCE</span><h3>Reglas de ejecución</h3><p>Quota/revenue baseline, territorio, ownership de renovaciones, deal registration, pricing, escalaciones y métricas.</p><p><b>Resultado:</b> forecast y priorización alineados con las expectativas de la posición.</p></div>
+</div>
+
+<div class="note" style="margin-top:24px"><b>Principio:</b> el seller mantiene ownership de estrategia y ejecución. TrendAI aporta inteligencia, sponsorship, capacidad técnica y ecosistema para acelerar resultados; no se espera que la compañía “entregue oportunidades”.</div>
+</div></section>
 </body></html>
